@@ -1,3 +1,3 @@
 # Just Random Code
 
-There's probably nothing of value here. 
+Code snippets or little programs that don't need their own repository.
