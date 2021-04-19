@@ -12,3 +12,6 @@ I have now added most of the code that allows the lights to go off (still one co
 
 ## Changelog 2
 I now have fully working levels that go up to 50. 
+
+## Changelog 3
+Initial work on a gui has started. Experimenting with it now.
