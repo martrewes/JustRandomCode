@@ -1,5 +1,5 @@
 conky.config = {
-
+    -- This is using a 4K display, I am not sure if it will work right on other screen densities.
     own_window_argb_visual = true,
     own_window_argb_value = 0,
     double_buffer = true,
