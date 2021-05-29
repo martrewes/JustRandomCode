@@ -1,0 +1,139 @@
+conky.config = {
+
+    own_window_argb_visual = true,
+    own_window_argb_value = 0,
+    double_buffer = true,
+    alignment = 'top_right',
+    background = false,
+    border_width = 1,
+    cpu_avg_samples = 11,
+    default_color = '#55aa00',
+    color1 = '#dcffb9',
+
+    font =  'Source Code Pro:normal:size=11',
+    font5 =  'Source Code Pro:normal:size=9',
+    font2 = 'bitwise:normal:size=18',
+
+    font3 = 'bitwise:bold:size=48',
+    font4 = 'bitwise:normal:size=20',
+
+
+    -- font3 = 'Karmatic Arcade:normal:size=50',
+    -- font3 = 'BACKTO1982:normal:size=50',
+    -- m6x11:thin
+
+    draw_borders = false,
+    draw_graph_borders = false,
+    draw_outline = false,
+    draw_shades = false,
+    use_xft = true,
+    gap_x = 20,
+    gap_y = 20,
+
+    net_avg_samples = 2,
+    no_buffers = true,
+    out_to_console = false,
+    out_to_stderr = false,
+    extra_newline = false,
+
+    minimum_height = 5,
+
+    maximum_width  = 400,
+    minimum_width  = 400,
+
+    own_window = true,
+    own_window_class = 'Conky',
+
+    own_window_hints =  'below',
+    own_window_type =  'dock',
+
+    stippled_borders = 0,
+    update_interval = 2.5,
+    uppercase = false,
+    use_spacer = 'none',
+    show_graph_scale = false,
+    show_graph_range = false,
+    short_units = true,
+
+}
+
+conky.text = [[
+
+${alignc}${font3}${color1}${time %H:%M}${font4}
+${alignc}${font4}${time %a, %d %B %Y}${font}
+# -- #
+
+# -- #
+${font2}${color1}
+SYSTEM ${hr 2}
+${font}${color}
+Kernel  ${alignr} ${color1}$kernel${color}
+Host    ${alignr} $nodename
+Temp    ${alignr} ${hwmon 2 temp 1}°C
+Uptime  ${alignr} ${uptime_short}
+Updates ${alignr} ${execi 30 /home/martin/.config/conky/pacman-updates}
+# -- #
+# -- #
+${font2}${color1}
+PROCESSES ${hr 2}
+${font}${color}
+RAM    ${color1}$mem/$memmax ${membar 6}${color}
+CPU             ${color1}${cpu}% ${cpubar 6}${color}
+
+Threads:   $threads   ${alignr} Running: $running_threads
+Processes: $processes ${alignr} Running: $running_processes
+
+${color1}NAME ${alignr} PID  CPU% MEM%${color}
+${font5}${top name 1} ${alignr} ${top pid 1}  ${top cpu 1}  ${top mem 1}
+${top name 2} ${alignr} ${top pid 2}  ${top cpu 2}  ${top mem 2}
+${top name 3} ${alignr} ${top pid 3}  ${top cpu 3}  ${top mem 3}
+${top name 4} ${alignr} ${top pid 4}  ${top cpu 4}  ${top mem 4}
+${top name 5} ${alignr} ${top pid 5}  ${top cpu 5}  ${top mem 5}
+${top name 6} ${alignr} ${top pid 6}  ${top cpu 6}  ${top mem 6}
+${top name 7} ${alignr} ${top pid 7}  ${top cpu 7}  ${top mem 7}
+${top name 8} ${alignr} ${top pid 5}  ${top cpu 5}  ${top mem 8}
+${top name 9} ${alignr} ${top pid 6}  ${top cpu 6}  ${top mem 9}{font}
+# -- #
+# -- #
+${font2}${color1}
+STORAGE ${hr 2}
+${font}${color}
+Read: ${diskio_read}/s  ${alignr}  Write: ${diskio_write}/s
+Part   ${alignr}Used  Total  Free
+${color1}Arch   ${color}${alignr} ${fs_used /} ${fs_size /}   ${fs_free /}
+${color1}${fs_bar 6 /}
+${if_existing /data}
+${color1}Data ${color}${alignr} ${fs_used /data} ${fs_size /data} ${fs_free /data}
+${color1}${fs_bar 6 /data}${endif}
+${if_existing /win}
+${color1}Windows ${color}${alignr} ${fs_used /win}  ${fs_size /win}  ${fs_free /win}
+${color1}${fs_bar 6 /win}${endif}
+${if_existing /steam}
+${color1}Steam ${color}${alignr} ${fs_used /steam} ${fs_size /steam} ${fs_free /steam}
+${color1}${fs_bar 6 /steam}${endif}
+# -- #
+# -- #
+${font2}${color1}
+NETWORK ${hr 2}
+${font}${color}
+State   ${color1}${alignr} ${if_existing /sys/class/net/enp3s0/operstate up}ONLINE${else}OFFLINE${endif}${color}
+Inbound: ${tcp_portmon 1 32767 count} ${alignr} Outbound: ${tcp_portmon 32768 61000 count}
+
+${color1}Down: ${downspeed enp3s0}/s  ${color}${alignr} Total: ${totaldown enp3s0}
+${color1}${downspeedgraph enp3s0 30}${color}
+${color1}Up: ${upspeed enp3s0}/s      ${color}${alignr} Total: ${totalup enp3s0}
+${color1}${upspeedgraph enp3s0 30 }${color}
+# -- #
+# -- #
+
+${if_existing /home/martin/.config/quodlibet/current}
+${font2}${color1}Now Playing ${hr 2}${font5}${color}
+${alignr}Status: ${exec quodlibet --status | cut -d " " -f1}
+${color1}Title:${color}
+${font}${exec echo $(quodlibet --print-playing "<title>") "("$(date -d@$(quodlibet --print-playing "<~#length>") -u +%M:%S)")"  | fold -sw31}
+${color1}${font5}Artist:${color}${font}
+${exec quodlibet --print-playing "<artist>" | fold -sw31}
+${color1}${font5}Album:${color}${font}
+${exec quodlibet --print-playing "<album> [<date>]" | fold -sw31}
+${endif}
+]]
