@@ -71,7 +71,7 @@ Kernel  ${alignr} ${color1}$kernel${color}
 Host    ${alignr} $nodename
 Temp    ${alignr} ${hwmon 2 temp 1}°C
 Uptime  ${alignr} ${uptime_short}
-Updates ${alignr} ${execi 30 /home/martin/.config/conky/pacman-updates}
+Updates ${alignr} ${execi 30 checkupdates | wc -l}
 # -- #
 # -- #
 ${font2}${color1}
