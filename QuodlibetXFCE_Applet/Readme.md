@@ -16,3 +16,10 @@ Once installed point the Generic Monitor applet to the script:
 
 ## Screenshot
 ![img](Screenshot.png)
+
+## Additional Cover Art
+I have modified the default `write_cover.py` plugin to resize the cover so it also fits on my XFCE taskbar. 
+
+Place the `cover_mod.py` file in `/usr/lib/python3.9/site-packages/quodlibet/etc/events` (requires root). Then create another genmon applet and set the command to `echo "<img>/home/username/.config/quodlibet/cover.jpg<\img>`
+
+![img](Screenshot2.png)
