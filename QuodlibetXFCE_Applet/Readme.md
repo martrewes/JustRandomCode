@@ -12,17 +12,9 @@ Just a simple applet thrown together in Python to display the currently playing 
 >`sudo dnf install xfce-genmon-plugin`
 
 Once installed point the Generic Monitor applet to the script:
-`/usr/bin/python [script/location]`
+`/usr/bin/python [script/location]` 
 
-## Screenshot
-![img](Screenshot.png)
-
-## Additional Cover Art
-I have modified the default `write_cover.py` plugin to resize the cover so it also fits on my XFCE taskbar. 
-
-Place the `cover_mod.py` file in `/usr/lib/python3.9/site-packages/quodlibet/etc/events` (requires root). Then create another genmon applet and set the command to `echo "<img>/home/username/.config/quodlibet/cover.jpg<\img>`
-
-![img](Screenshot2.png)
+Then select your prefered font and size.
 
 # New Version (Not tied to QuodLibet)
 
@@ -33,6 +25,26 @@ The new script is called `anyPlaying.py` and does not need a hardcoded path in i
 
 This should be compatible with all players that support mpris/DBus.
 
-# TODO
+This script also now gets the cover art from the playing song, resizes it and displays it along with the song information.
 
-Try and get cover art to work with the one script.
+## Requirements
+```
+pip install Pillow
+```
+For image resizing
+
+
+## Screenshot
+![img](Screenshot.png)
+![img](Screenshot2.png)
+
+## ~~Additional Cover Art~~
+~~I have modified the default `write_cover.py` plugin to resize the cover so it also fits on my XFCE taskbar.~~
+
+~~Place the `cover_mod.py` file in `/usr/lib/python3.9/site-packages/quodlibet/etc/events` (requires root). Then create another genmon applet and set the command to `echo "<img>/home/username/.config/quodlibet/cover.jpg<\img>`~~
+
+
+
+# ~~TODO~~
+
+[x] Try and get cover art to work with the one script.

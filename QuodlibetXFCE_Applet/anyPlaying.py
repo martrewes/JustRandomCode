@@ -1,26 +1,29 @@
 #!/usr/bin/env python3
 import datetime
 import dbus
-#from mpris2 import Player
+import urllib.parse
+from PIL import Image
 
 bus = dbus.SessionBus()
 noPlayer = False
 
 for service in bus.list_names():
-    #print(service)
+    
     if service.startswith('org.mpris.MediaPlayer2.'):
-        #print(service)
+        
         player = dbus.SessionBus().get_object(service, '/org/mpris/MediaPlayer2')
         status=player.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus', dbus_interface='org.freedesktop.DBus.Properties')
         metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
-        
+        #print(metadata)
+
+        #print no media playing if nothing is in fact, playing
         if status == "Paused" or status == "Stopped":
-            print("     No media")
+            print(" No media")
             print(" currently playing")
             quit()
         
         else:
-        #Get Globals
+        #Get song information
             try:
                 title = str(metadata["xesam:title"])
             except KeyError:
@@ -52,19 +55,39 @@ for service in bus.list_names():
                 trackNo = str(metadata["xesam:trackNumber"]) + ". "
             except KeyError:
                 trackNo = ""
+            
+            try:
+                artUrl = urllib.parse.unquote(str(metadata["mpris:artUrl"][7:]))
+            except KeyError:
+                artUrl = ""
 
+            #create the strings
             strLine1 = trackNo + title + length
             strLine2 = (artist + " - " + album + year)
             
-            if len(strLine1) < len(strLine2):
-                padding = round((len(strLine2) - len(strLine1)) / 2)
-                print(" " * padding + strLine1)
-                print(strLine2)
-            else:
-                padding = round((len(strLine1) - len(strLine2)) / 2)
-                print(strLine1)
-                print(" " * padding + strLine2)#
+            #add padding on either - no longer seem to need
+
+            #if len(strLine1) < len(strLine2):
+            #    padding = round((len(strLine2) - len(strLine1)) / 4)
+            #    strLine1 = " " * padding + strLine1
+            #    
+            #else:
+            #    padding = round((len(strLine1) - len(strLine2)) / 2)
+            #    strLine2 = " " * padding + strLine2
             
+            #resize the art
+            if artUrl != "":
+                baseheight = 48
+                img = Image.open(artUrl)
+                hpercent = (baseheight / float(img.size[1]))
+                wsize = int((float(img.size[0]) * float(hpercent)))
+                img = img.resize((wsize, baseheight))
+                img.save('/tmp/albumArt.jpg')
+                artUrl = '<img>/tmp/albumArt.jpg</img>'
+           
+            print(artUrl + "<txt> " + strLine1 + "\n " + strLine2 + "</txt>")
+           
+
             
         quit()
     else:
