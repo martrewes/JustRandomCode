@@ -35,7 +35,7 @@ for service in bus.list_names():
                 artist = ""
 
             try:
-                album = str(metadata["xesam:album"])
+                album = " - " + str(metadata["xesam:album"])
             except KeyError:
                 album = ""
             
@@ -63,7 +63,7 @@ for service in bus.list_names():
 
             #create the strings
             strLine1 = trackNo + title + length
-            strLine2 = (artist + " - " + album + year)
+            strLine2 = (artist + album + year)
             
             #add padding on either - no longer seem to need
 
