@@ -8,15 +8,15 @@ bus = dbus.SessionBus()
 noPlayer = False
 
 for service in bus.list_names():
-    
+    #check if there is an application playing audio
     if service.startswith('org.mpris.MediaPlayer2.'):
-        
+        #get player object, status and metadata
         player = dbus.SessionBus().get_object(service, '/org/mpris/MediaPlayer2')
         status=player.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus', dbus_interface='org.freedesktop.DBus.Properties')
         metadata = player.Get('org.mpris.MediaPlayer2.Player', 'Metadata', dbus_interface='org.freedesktop.DBus.Properties')
         #print(metadata)
 
-        #print no media playing if nothing is in fact, playing
+        #print message if nothing is playing
         if status == "Paused" or status == "Stopped":
             print(" No media")
             print(" currently playing")
@@ -44,6 +44,7 @@ for service in bus.list_names():
             except KeyError:
                 year = ""
 
+            #convert the tracklength to human readable
             baseTime = datetime.datetime(1,1,1)
             try:
                 lengthTemp = datetime.timedelta(seconds=(metadata["mpris:length"]) / 1000000)
@@ -65,7 +66,7 @@ for service in bus.list_names():
             strLine1 = trackNo + title + length
             strLine2 = (artist + album + year)
             
-            #add padding on either - no longer seem to need
+            #add padding on either - no longer seem to need it
 
             #if len(strLine1) < len(strLine2):
             #    padding = round((len(strLine2) - len(strLine1)) / 4)
@@ -82,12 +83,12 @@ for service in bus.list_names():
                 hpercent = (baseheight / float(img.size[1]))
                 wsize = int((float(img.size[0]) * float(hpercent)))
                 img = img.resize((wsize, baseheight))
+                #stores the art in RAM, no more needless R/W to disk
                 img.save('/tmp/albumArt.jpg')
                 artUrl = '<img>/tmp/albumArt.jpg</img>'
-           
-            print(artUrl + "<txt> " + strLine1 + "\n " + strLine2 + "</txt>")
-           
 
+            #push it out
+            print(artUrl + "<txt> " + strLine1 + "\n " + strLine2 + "</txt>")
             
         quit()
     else:
