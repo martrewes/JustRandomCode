@@ -18,8 +18,7 @@ for service in bus.list_names():
 
         #print message if nothing is playing
         if status == "Paused" or status == "Stopped":
-            print(" No media")
-            print(" currently playing")
+            print("No media playing")
             quit()
         
         else:
