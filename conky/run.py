@@ -39,6 +39,7 @@ response = get(ENDPOINT, params=api_params, timeout=10)
 resJson = response.json()
 if response.status_code >= 400:
     raise RuntimeError(f'Request failed: { response.text }')
+    quit()
 
 
 #print(response.url)
@@ -57,6 +58,7 @@ T_Deaths = resJson['data'][0]['totDeaths']
 T_1Vac = resJson['data'][1]['tot1Vac']
 T_2Vac = resJson['data'][1]['tot2Vac']
 T_3Vac = resJson['data'][1]['tot3Vac']
+strToday = "             Last Updated: " + str(resJson['data'][0]['date'])
 
 if t_Cases > y_Cases:
     p_Cases = "↑" + str(round(((t_Cases / y_Cases) * 100)-100,1)) + "%"
