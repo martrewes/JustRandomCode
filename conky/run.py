@@ -37,8 +37,10 @@ api_params = {
 
 response = get(ENDPOINT, params=api_params, timeout=10)
 resJson = response.json()
-if response.status_code >= 400:
-    raise RuntimeError(f'Request failed: { response.text }')
+if response.status_code >= 400:    
+    f = open("/home/martin/.config/conky/covid.txt", "w")
+    f.write("No Network Connection")
+    f.close()
     quit()
 
 
