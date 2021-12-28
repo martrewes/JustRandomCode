@@ -1,6 +1,8 @@
+from matplotlib import lines
 from requests import get
 from json import dumps
 import datetime
+import csv
 
 today = datetime.datetime.now()
 strToday = today.strftime("       Last Updated: %H:%M %d/%m/%Y")
@@ -37,10 +39,8 @@ api_params = {
 
 response = get(ENDPOINT, params=api_params, timeout=10)
 resJson = response.json()
-if response.status_code >= 400:    
-    f = open("/home/martin/.config/conky/covid.txt", "w")
-    f.write("No Network Connection")
-    f.close()
+if response.status_code >= 400:
+    raise RuntimeError(f'Request failed: { response.text }')
     quit()
 
 
@@ -87,6 +87,7 @@ if t_3Vac > y_3Vac:
 else:
     p_3Vac = "↓" + str(round(100-((t_3Vac / y_3Vac) * 100),1)) + "%"
 
+#Write out the summary text
 f = open("/home/martin/.config/conky/covid.txt", "w")
 f.write("       Today   Yest.  Total    Diff.")
 f.write("\nCases  " + str(t_Cases) + " " * (8 - len(str(t_Cases))) + str(y_Cases) + " " * (7 - len(str(y_Cases))) + str(T_Cases) + " " * (9 - len(str(T_Cases))) + p_Cases)
@@ -97,4 +98,34 @@ f.write("\nB Vac. " + str(t_3Vac) + " " * (8 - len(str(t_3Vac))) + str(y_3Vac) +
 f.write("\n"+strToday)
 f.close()
 
-#Probably wont work tomorrow.
+#Exporting to CSV
+csv_data = resJson['data']
+data_file = open('covidStats.csv', 'w')
+csv_writer = csv.writer(data_file)
+count = 0
+ 
+for row in csv_data:
+    if count == 0:
+        header = row.keys()
+        csv_writer.writerow(header)
+        count += 1
+
+    csv_writer.writerow(row.values())
+ 
+data_file.close()
+
+import pandas
+import matplotlib.pyplot as plt
+
+array = [['3','dailyCases','Daily Cases'],['5','dailyDeaths','Daily Deaths']]
+
+for each in array:
+    df = pandas.read_csv('covidStats.csv', delimiter=',', 
+                     usecols=[0,int(each[0])], infer_datetime_format=True,
+                     parse_dates=True, date_parser=pandas.to_datetime,
+                     nrows=30, )
+    dfRev = df[::-1].reset_index(drop=True) 
+    dfRev.plot(legend=False, color="green",linewidth=2.0)
+    plt.axis('off')
+    plt.title(str(each[2]), color="white",fontsize=20)
+    plt.savefig(str(each[1])+'.png',bbox_inches='tight', transparent=True, pad_inches=0.01)
