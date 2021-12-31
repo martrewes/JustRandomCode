@@ -5,12 +5,12 @@ import datetime
 import csv
 import os
 
-if os.path.exists(os.path.expanduser('~') + '/.config/conky/covidStats.csv'):
-    os.remove(os.path.expanduser('~') + '/.config/conky/covidStats.csv')
-if os.path.exists(os.path.expanduser('~') + '/.config/conky/dailyCases.png'):
-    os.remove(os.path.expanduser('~') + '/.config/conky/dailyCases.png')
-if os.path.exists(os.path.expanduser('~') + '/.config/conky/dailyDeaths.png'):
-    os.remove(os.path.expanduser('~') + '/.config/conky/dailyDeaths.png')
+#if os.path.exists(os.path.expanduser('~') + '/.config/conky/covidStats.csv'):
+#    os.remove(os.path.expanduser('~') + '/.config/conky/covidStats.csv')
+#if os.path.exists(os.path.expanduser('~') + '/.config/conky/dailyCases.png'):
+#    os.remove(os.path.expanduser('~') + '/.config/conky/dailyCases.png')
+#if os.path.exists(os.path.expanduser('~') + '/.config/conky/dailyDeaths.png'):
+#    os.remove(os.path.expanduser('~') + '/.config/conky/dailyDeaths.png')
 
 today = datetime.datetime.now()
 strToday = today.strftime("       Last Updated: %H:%M %d/%m/%Y")
@@ -125,8 +125,11 @@ for each in array:
                      usecols=[0,int(each[0])], infer_datetime_format=True,
                      parse_dates=True, date_parser=pandas.to_datetime,
                      nrows=30, )
-    dfRev = df[::-1].reset_index(drop=True) 
-    dfRev.plot(legend=False, color="green",linewidth=2.0)
+
+    dfRev = df[::-1].reset_index(drop=True)
+    dfRev['rolling_avg'] = round(dfRev.rolling(window = 7).mean(),0)
+    print(dfRev)
+    dfRev.plot(legend=False, color=["green", "white"],linewidth=2.0)
     plt.axis('off')
     plt.title(str(each[2]), color="white",fontsize=20)
     plt.savefig(os.path.expanduser('~') + '/.config/conky/' + str(each[1])+'.png',bbox_inches='tight', transparent=True, pad_inches=0.01)
