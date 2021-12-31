@@ -124,11 +124,11 @@ for each in array:
     df = pandas.read_csv(os.path.expanduser('~') + '/.config/conky/covidStats.csv', delimiter=',', 
                      usecols=[0,int(each[0])], infer_datetime_format=True,
                      parse_dates=True, date_parser=pandas.to_datetime,
-                     nrows=30, )
+                     nrows=38, )
 
     dfRev = df[::-1].reset_index(drop=True)
     dfRev['rolling_avg'] = round(dfRev.rolling(window = 7).mean(),0)
-    dfRev.plot(legend=False, color=["green", "white"],linewidth=2.0)
+    dfRev.iloc[7:37].plot(legend=False, color=["green", "white"],linewidth=2.0)
     plt.axis('off')
     plt.title(str(each[2]), color="white",fontsize=20)
     plt.savefig(os.path.expanduser('~') + '/.config/conky/' + str(each[1])+'.png',bbox_inches='tight', transparent=True, pad_inches=0.01)
