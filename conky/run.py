@@ -142,6 +142,8 @@ f.write("\nB Vac. " + str(t_3Vac) + " " * (8 - len(str(t_3Vac))) + str(y_3Vac) +
 f.write("\n"+strToday)
 f.close()
 
+os.system('cat ' + os.path.expanduser('~') + "/.config/conky/covid.txt")
+
 f = open(os.path.expanduser('~') + "/.config/conky/requestLog.txt", "a")
 f.write("\n" + today.strftime("%H:%M %d/%m/%Y") + ": Request succeeded!")
 f.close()
