@@ -128,7 +128,7 @@ for each in array:
 
     dfRev = df[::-1].reset_index(drop=True)
     dfRev['rolling_avg'] = round(dfRev.rolling(window = 7).mean(),0)
-    dfRev.iloc[7:37].plot(legend=False, color=["green", "white"],linewidth=2.0)
+    dfRev.iloc[7:38].plot(legend=False, color=["green", "white"],linewidth=2.0)
     plt.axis('off')
     plt.title(str(each[2]), color="white",fontsize=20)
     plt.savefig(os.path.expanduser('~') + '/.config/conky/' + str(each[1])+'.png',bbox_inches='tight', transparent=True, pad_inches=0.01)
