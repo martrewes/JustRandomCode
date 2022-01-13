@@ -6,10 +6,25 @@ I made this to compliment a refurbished Surface Pro (hence simple UI) that I had
 
 Should work on Windows and Linux.
 
+## Requirements
+```bash
+pip install PyQt5
+
+python main.py
+```
+
+## HiDPI
+
+If you're not using a HiDPI screen, comment out:
+```python
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+```
+
 ## TODO
 
 - [ ] Make the dial and spinbox react to the time decreasing.
-- [ ] Okay I need to fix the UI on windows, it's pretty awful (see screenshot)
+- [x] Okay I need to fix the UI on windows, it's pretty awful (see screenshot)
 
 ## Screenshot
 
