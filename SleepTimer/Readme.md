@@ -9,7 +9,8 @@ Should work on Windows and Linux.
 ## TODO
 
 - [ ] Make the dial and spinbox react to the time decreasing.
+- [ ] Okay I need to fix the UI on windows, it's pretty awful (see screenshot)
 
 ## Screenshot
 
-![img](Screenshot.jpg)
+![img](Screenshot.jpg) ![img](ScreenshotWindows.jpg)
