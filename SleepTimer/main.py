@@ -2,6 +2,9 @@ from PyQt5 import QtWidgets, uic, QtCore
 import sys
 import os
 
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+
 class Ui(QtWidgets.QMainWindow):
     
     def __init__(self):
