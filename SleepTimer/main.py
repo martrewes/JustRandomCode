@@ -64,7 +64,7 @@ class Ui(QtWidgets.QMainWindow):
             self.timer0 = QtCore.QTimer()
             self.time = QtCore.QTime(0, 0, 0)
             self.time = self.time.addSecs(int(self.spnTime.value()) * 60)
-            self.timer0.setInterval(50)
+            self.timer0.setInterval(1000)
             self.timer0.timeout.connect(lambda:self.ticker())
             self.timer0.start()
         else:
