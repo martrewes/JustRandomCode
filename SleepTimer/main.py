@@ -2,14 +2,20 @@ from PyQt5 import QtWidgets, uic, QtCore
 import sys
 import os
 
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+if len(sys.argv) == 2 and sys.argv[1] == '--lodpi':
+    print("Using Low DPI mode")
+else:
+    #thanks https://leomoon.com/journal/python/high-dpi-scaling-in-pyqt5/
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
+
+    print("Using HiDPI mode")
 
 class Ui(QtWidgets.QMainWindow):
     
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('main.ui', self)
+        uic.loadUi('SleepTimer/main.ui', self)
         self.dial = self.findChild(QtWidgets.QDial, 'dialMins')
         self.dial.valueChanged.connect(self.sliderMoved)
         self.dial.setValue(30)
@@ -41,8 +47,11 @@ class Ui(QtWidgets.QMainWindow):
         self.spnTime.setValue(self.spnTime.value() - 1)
 
     def btnPressed(self):
-
+        global timeSet 
+        
+        
         if self.active == False:
+            timeSet = int(self.spnTime.value())
             self.btnStart.setText("Cancel")
             self.spnTime.setEnabled(False)
             self.dialMins.setEnabled(False)
@@ -61,20 +70,24 @@ class Ui(QtWidgets.QMainWindow):
             self.dialMins.setEnabled(True)
             self.groupBox.setEnabled(True)
             self.statusBar.clearMessage()
+            self.spnTime.setValue(timeSet)
 
     def timeChanged(self):
         self.dial.setValue(self.spnTime.value())
-    
+    def osShutdown():
+        print(os.name)
     def ticker(self):
         if self.active == True:
             global time
+            self.spnTime.setValue((int(self.time.toString("hh")) * 60) + int(self.time.toString("mm")))
             if self.time.second() == 0 and self.time.minute() == 0 and self.time.hour() == 0:
                 if self.radShutdown.isChecked():
-                    print("Shutdown!")
-                    if os.name == 'nt':
-                        os.system("shutdown /s /t 10")
-                    else: 
-                        os.system("systemctl poweroff")
+                    #print("Shutdown!")
+                    #if os.name == 'nt':
+                    #    os.system("shutdown /s /t 10")
+                    #else: 
+                    #    os.system("systemctl poweroff")
+                    osShutdown()
                 if self.radRestart.isChecked():
                     print("Restarting!")
                     if os.name == 'nt':
@@ -96,7 +109,10 @@ class Ui(QtWidgets.QMainWindow):
                 exit()
             self.time = self.time.addSecs(-1)
             self.statusBar.showMessage("Time Remaining: " + self.time.toString("hh:mm:ss",))
+
+
 active = False
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec_()
+
