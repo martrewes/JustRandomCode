@@ -26,8 +26,11 @@ The script will use HiDPI by default. If you wish to use the standard setting, p
 
 ## TODO
 
+- [ ] Pause playing audio when going to sleep
+- [ ] Slowly adjust volume down (maybe in the last minute or two?)
+- [ ] Possibly add brightness control
 - [x] Make the dial and spinbox react to the time decreasing.
-- [ ] Make the UI more uniform on both platforms.
+- [x] Make the UI more uniform on both platforms.
 - [x] Okay I need to fix the UI on windows, it's pretty awful ~~(see screenshot)~~
 
 ## Screenshot
