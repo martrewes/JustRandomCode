@@ -74,30 +74,45 @@ T_2Vac = resJson['data'][1]['tot2Vac']
 T_3Vac = resJson['data'][1]['tot3Vac']
 strToday = "             Last Updated: " + str(resJson['data'][0]['date'])
 
-if t_Cases > y_Cases:
-    p_Cases = "↑" + str(round(((t_Cases / y_Cases) * 100)-100,1)) + "%"
+if t_Cases == 0 or y_Cases == 0:
+    p_Cases = "N/A"
 else:
-    p_Cases = "↓" + str(round(100-((t_Cases / y_Cases) * 100),1)) + "%"
+    if t_Cases > y_Cases:
+        p_Cases = "↑" + str(round(((t_Cases / y_Cases) * 100)-100,1)) + "%"
+    else:
+        p_Cases = "↓" + str(round(100-((t_Cases / y_Cases) * 100),1)) + "%"
 
-if t_Deaths > y_Deaths:
-    p_Deaths = "↑" + str(round(((t_Deaths / y_Deaths) * 100)-100,1)) + "%"
+if t_Deaths == 0 or y_Deaths == 0:
+    p_Deaths = "N/A"
 else:
-    p_Deaths = "↓" + str(round(100-((t_Deaths / y_Deaths) * 100),1)) + "%"
+    if t_Deaths > y_Deaths:
+        p_Deaths = "↑" + str(round(((t_Deaths / y_Deaths) * 100)-100,1)) + "%"
+    else:
+        p_Deaths = "↓" + str(round(100-((t_Deaths / y_Deaths) * 100),1)) + "%"
 
-if t_1Vac > y_1Vac:
-    p_1Vac = "↑" + str(round(((t_1Vac / y_1Vac) * 100)-100,1)) + "%"
+if t_1Vac == 0 or y_1Vac == 0:
+    p_1Vac = "N/A"
 else:
-    p_1Vac = "↓" + str(round(100-((t_1Vac / y_1Vac) * 100),1)) + "%"
+    if t_1Vac > y_1Vac:
+        p_1Vac = "↑" + str(round(((t_1Vac / y_1Vac) * 100)-100,1)) + "%"
+    else:
+        p_1Vac = "↓" + str(round(100-((t_1Vac / y_1Vac) * 100),1)) + "%"
 
-if t_2Vac > y_2Vac:
-    p_2Vac = "↑" + str(round(((t_2Vac / y_2Vac) * 100)-100,1)) + "%"
+if t_2Vac == 0 or y_2Vac == 0:
+    p_2Vac = "N/A"
 else:
-    p_2Vac = "↓" + str(round(100-((t_2Vac / y_2Vac) * 100),1)) + "%"
+    if t_2Vac > y_2Vac:
+        p_2Vac = "↑" + str(round(((t_2Vac / y_2Vac) * 100)-100,1)) + "%"
+    else:
+        p_2Vac = "↓" + str(round(100-((t_2Vac / y_2Vac) * 100),1)) + "%"
 
-if t_3Vac > y_3Vac:
-    p_3Vac = "↑" + str(round(((t_3Vac / y_3Vac) * 100)-100,1)) + "%"
+if t_3Vac == 0 or y_3Vac == 0:
+    p_3Vac = "N/A"
 else:
-    p_3Vac = "↓" + str(round(100-((t_3Vac / y_3Vac) * 100),1)) + "%"
+    if t_3Vac > y_3Vac:
+        p_3Vac = "↑" + str(round(((t_3Vac / y_3Vac) * 100)-100,1)) + "%"
+    else:
+        p_3Vac = "↓" + str(round(100-((t_3Vac / y_3Vac) * 100),1)) + "%"
 
 #Exporting to CSV
 csv_data = resJson['data']
@@ -146,6 +161,14 @@ f.close()
 
 os.system('cat ' + os.path.expanduser('~') + "/.config/conky/covid.txt")
 
-f = open(os.path.expanduser('~') + "/.config/conky/requestLog.txt", "a")
-f.write("\n" + today.strftime("%H:%M %d/%m/%Y") + ": Request succeeded!")
-f.close()
+with open(os.path.expanduser('~') + "/.config/conky/requestLog.txt", "r+") as f:
+    lines = f.readlines()
+    linenum = (len(lines))
+    if len(lines) > 79:
+        f.seek(0)
+        f.truncate()
+        f.writelines(lines[1:])
+        f.writelines("\n" + today.strftime("%H:%M %d/%m/%Y") + ": Request succeeded!")
+    else:
+        f.writelines("\n" + today.strftime("%H:%M %d/%m/%Y") + ": Request succeeded!")
+    f.close()
