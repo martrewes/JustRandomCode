@@ -1,0 +1,3 @@
+SSID = "Three_9629"
+PSK = "JN241132A!three"
+COUNTRY = "GB"
