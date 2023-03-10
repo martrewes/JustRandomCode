@@ -1,3 +1,4 @@
+# Imports
 import badger2040w
 import jpegdec
 import utime
@@ -7,18 +8,31 @@ from badger2040w import WIDTH
 import urequests
 import ahtx0
 import machine
+from umqtt.simple import MQTTClient
 
-# Create I2C object
-
-# Print out any addresses found
-
-
+# Set variables
 badger = badger2040w.Badger2040W()
 jpeg = jpegdec.JPEG(badger.display)
 badger2040w.system_speed(3)
 badger.set_update_speed(1)
+LAT = 51.491879
+LNG = -0.082484
+TIMEZONE = "auto"  # determines time zone from lat/long
+URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&timezone=" + TIMEZONE
 
+i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))  
+wifiIP = badger2040w.network.WLAN(badger2040w.network.STA_IF).ifconfig()[0]
+rtc = machine.RTC()
 
+mqtt_server = 'broker.hivemq.com'
+client_id = 'martrewes'
+topic_pub_extemp = b'martrewes/extemp'
+topic_pub_intemp = b'martrewes/intemp'
+topic_pub_inhum = b'martrewes/inhum'
+
+temperature = 0
+print(rtc.datetime())
+badger.led(128)
 
 try:
     badger.connect()
@@ -27,16 +41,19 @@ try:
 except (RuntimeError, OSError):
     pass  # no WiFI
 
-LAT = 51.491879
-LNG = -0.082484
-TIMEZONE = "auto"  # determines time zone from lat/long
-URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&timezone=" + TIMEZONE
+def mqtt_connect():
+   client = MQTTClient(client_id, mqtt_server, keepalive=3600)
+   client.connect()
+   print('Connected to %s MQTT Broker'%(mqtt_server))
+   return client
 
+def mqtt_reconnect():
+   print('Failed to connect to the MQTT Broker. Reconnecting...')
+   time.sleep(5)
+   machine.reset()
 
-wifiIP = badger2040w.network.WLAN(badger2040w.network.STA_IF).ifconfig()[0]
-rtc = machine.RTC()
-badger.led(128)
 def clearScreen():
+    # Sets the active pen colour to white, fills the screen, then sets it back to black
     badger.set_pen(15)
     badger.clear()
     badger.set_pen(0)
@@ -48,6 +65,7 @@ def scanI2C():
             print((d))
 
 def drawRec(startX,startY,xSize,ySize):
+    # Function I made for drawing a line rectangle
     badger.line(startX,startY,xSize,startY)
     badger.line(startX,startY,startX,startY + ySize)
     badger.line(startX+xSize,startY,startX+xSize,startY+ySize)
@@ -58,14 +76,15 @@ def drawRec(startX,startY,xSize,ySize):
     #	---
     #    D
 
-def get_data():
+def getWeather():
+    # Get laterst weather from the internet
     global weathercode, temperature, windspeed, winddirection, date, time
     print(f"Requesting URL: {URL}")
     r = urequests.get(URL)
     # open the json data
     j = r.json()
     print("Data obtained!")
-    print(j)
+    # print(j)
 
     # parse relevant data from JSON
     current = j["current_weather"]
@@ -74,7 +93,6 @@ def get_data():
     winddirection = calculate_bearing(current["winddirection"])
     weathercode = current["weathercode"]
     date, time = current["time"].split("T")
-
     r.close()
 
 def calculate_bearing(d):
@@ -109,14 +127,12 @@ def getTime():
         update_time = utime.ticks_ms()
         print("RTC updated\n")
 
-    #rtc = machine.RTC()
 def updateTime():    
     year, month, day, wd, hour, minute, second, _ = rtc.datetime()
     hours = "{:02}".format(hour)
     mins = "{:02}".format(minute)
     dmy = "{:02}/{:02}/{:02}".format(day, month, year)
 
-    
     #print(rtc.datetime)
     badger.set_thickness(2)
     badger.set_font("sans")
@@ -165,37 +181,82 @@ def setWeather():
         mphTemp = windspeed * 0.621371
         mph = "{:.1f}".format(mphTemp)
         badger.text(f"{mph}" + "mph | " + f"{winddirection}",158, 112, scale=0.5,angle=270)
-    #    badger.text(f"Wind Direction: {winddirection}", int(WIDTH / 3), 68, WIDTH - 105, 2)
-    #    badger.text(f"Last update: {date}, {time}", int(WIDTH / 3), 88, WIDTH - 105, 2)
-
-    else:
-        badger.set_pen(0)
-        badger.rectangle(0, 60, WIDTH, 25)
-        badger.set_pen(15)
-        badger.text("Unable to badger weather! Check your network settings in WIFI_CONFIG.py", 5, 65, WIDTH, 1)
-
+        
 def setIntTemp():
-    i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))  
+    global inTemp
+    global inHum
     sensor = ahtx0.AHT10(i2c)
-    inTemp = "%0.2f" % sensor.temperature
-    inHum = "%0.2f%%" % sensor.relative_humidity
-
+    inTemp = str("%0.2f" % sensor.temperature)
+    inHum = str("%0.2f" % sensor.relative_humidity)
+    #print(inTemp)
+    badger.set_thickness(2)
     badger.text("--   Internal   --",178,124,scale=0.4, angle=270)
     badger.set_thickness(4)
     badger.text(inTemp, 204,122, scale=1.1, angle=270)
     badger.set_thickness(2)
     badger.text("°",192,14, scale=0.6, angle=270)
     badger.text("C",210,18,scale=0.8,angle=270)
-        
-    
-while True:
-    clearScreen()
-    get_data()
-    updateTime()
-    setWifi()
-    setWeather()
-    setIntTemp()
-    #Help
+    badger.set_thickness(4)
+    badger.text(inHum, 234,122, scale=1.1, angle=270)
+    badger.set_thickness(2)
+    badger.text("%",234,18,scale=0.8,angle=270)
+    #print(minutesSince)
 
+def noWifi():
+    badger.set_pen(15)
+    badger.rectangle(108, 3, 76, 120)
+    badger.set_pen(0)
+    badger.set_font("serif")
+    badger.text("No Wifi", 140,124, scale=1.1, angle=270)
+    badger.set_font("sans")
+
+def sendData():
+    client.publish(topic_pub_extemp, str(temperature))
+    client.publish(topic_pub_intemp, str(inTemp))
+    client.publish(topic_pub_inhum, str(inHum))
+    print("Data pushed to Node-RED")
+
+#scanI2C()
+getTime()
+setIntTemp()
+if badger.isconnected():
+    print("WiFi connected, refresh data") 
+    getWeather()
+    setWeather()
+    try:
+        client = mqtt_connect()
+        sendData() 
+    except OSError as e:
+        reconnect()
+else:
+    badger.rectangle(100, 3, 90, 120)
+
+minutesSince = 0
+
+
+while True:
+    inTemp = ""
+    clearScreen()
+    updateTime()
+    #client.publish(topic_pub_intemp, str(20.3))
+    # If weather data available, show it. If not, wont show error for no variables
+    if temperature > 0:
+        setWeather()
+    # Timer to pull new weather data, checking if network is available.
+    # ~~TODO: Add database push~~ Using Node-RED
+    if minutesSince > 15:
+        if badger.isconnected():
+            print("WiFi connected, refresh data")
+            getWeather()
+            setIntTemp()
+            sendData()
+        else:
+            noWifi()
+        minutesSince = 0
+    setWifi()
+    setIntTemp()
+    #print(inTemp)
+    minutesSince+=1
+    print(minutesSince)
     badger.update()
-    utime.sleep(5)
+    utime.sleep(60)
