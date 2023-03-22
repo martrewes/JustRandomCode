@@ -1,5 +1,10 @@
 ## Hacker's Monitor for XFCE
 
+> **Note** 
+> This is a modified version of this applet with the following changes:
+> - Changed network speed unit from `bits` to `bytes`
+> - Removed `ps` from unit display
+
 ### Screenshot and doc
 
 See the project [web page](https://lightful.github.io/xfce-hkmon/).
