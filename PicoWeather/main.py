@@ -21,11 +21,43 @@ LNG = -0.082484
 TIMEZONE = "auto"  # determines time zone from lat/long
 URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&timezone=" + TIMEZONE
 
+wCode = {
+0: "Clear",
+1: "Mainly Clear",
+2: "Partly Cloudy",
+3: "Overcast",
+45: "Fog",
+46: "Depositing rime fog",
+51: "Light Drizzle",
+53: "Moderate Drizzle",
+55: "Dense Drizzle",
+56: "Light Frz Drizzle",
+57: "Dense Frz Drizzle",
+61: "Slight Rain",
+63: "Moderate Rain",
+65: "Heavy Rain",
+66: "Light Frz Rain",
+67: "Heavy Frz Rain",
+71: "Slight Snow",
+73: "Moderate Snow",
+75: "Heavy Snow",
+77: "Snow Grains",
+80: "Slight Rain",
+81: "Moderare Rain",
+82: "Violent Rain",
+85: "Light Snow",
+86: "Heavy Snow",
+95: "Thunderstorm",
+96: "Thunderstorm",
+99: "Thunderstorm"
+}
+
 i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))  
 
 rtc = machine.RTC()
 
 temperature = 0
+currentWeather = ""
 print(rtc.datetime())
 badger.led(128)
 
@@ -63,7 +95,7 @@ def drawRec(startX,startY,xSize,ySize):
 
 def getWeather():
     # Get latest weather from the internet
-    global weathercode, temperature, windspeed, winddirection, date, time
+    global weathercode, temperature, windspeed, winddirection, date, time, currentWeather, wCode
     print(f"Requesting URL: {URL}")
     r = urequests.get(URL)
     # open the json data
@@ -77,6 +109,7 @@ def getWeather():
     windspeed = current["windspeed"]
     winddirection = calculate_bearing(current["winddirection"])
     weathercode = current["weathercode"]
+    currentWeather = wCode[weathercode]
     date, time = current["time"].split("T")
     r.close()
 
@@ -165,7 +198,10 @@ def setWeather():
         badger.text("C",136,18,scale=0.8,angle=270)
         mphTemp = windspeed * 0.621371
         mph = "{:.1f}".format(mphTemp)
-        badger.text(f"{mph}" + "mph | " + f"{winddirection}",158, 112, scale=0.5,angle=270)
+        badger.set_thickness(1)
+        badger.text(currentWeather,158, 112, scale=0.4,angle=270)
+        badger.set_thickness(2)
+        badger.text(f"{mph}" + "mph | " + f"{winddirection}",178, 112, scale=0.5,angle=270)
         
 def setIntTemp():
     global inTemp
@@ -175,16 +211,16 @@ def setIntTemp():
     inHum = str("%0.2f" % sensor.relative_humidity)
     #print(inTemp)
     badger.set_thickness(2)
-    badger.text("--   Internal   --",178,124,scale=0.4, angle=270)
+    badger.text("--   Internal   --",198,124,scale=0.4, angle=270)
     badger.set_thickness(4)
-    badger.text(inTemp, 204,122, scale=1.1, angle=270)
+    badger.text(inTemp, 224,122, scale=1.1, angle=270)
     badger.set_thickness(2)
-    badger.text("°",192,14, scale=0.6, angle=270)
-    badger.text("C",210,18,scale=0.8,angle=270)
+    badger.text("°",212,14, scale=0.6, angle=270)
+    badger.text("C",230,18,scale=0.8,angle=270)
     badger.set_thickness(4)
-    badger.text(inHum, 234,122, scale=1.1, angle=270)
+    badger.text(inHum, 254,122, scale=1.1, angle=270)
     badger.set_thickness(2)
-    badger.text("%",234,18,scale=0.8,angle=270)
+    badger.text("%",254,18,scale=0.8,angle=270)
     #print(minutesSince)
 
 def noWifi():
@@ -217,6 +253,10 @@ else:
 
 minutesSince = 0
 
+import os
+logfile = open('log.txt', 'a')
+# duplicate stdout and stderr to the log file
+os.dupterm(logfile)
 
 while True:
     inTemp = ""
@@ -226,7 +266,6 @@ while True:
     if temperature > 0:
         setWeather()
     # Timer to pull new weather data, checking if network is available.
-    # ~~TODO: Add database push~~ Using Node-RED
     if minutesSince > 15:
         if badger.isconnected():
             print("WiFi connected, refresh data")
