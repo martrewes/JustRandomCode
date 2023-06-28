@@ -6,9 +6,10 @@ import machine
 import ntptime
 from badger2040w import WIDTH
 import urequests
+import ujson
 import ahtx0
 import machine
-from umqtt.simple import MQTTClient
+import WIFI_CONFIG
 
 # Set variables
 badger = badger2040w.Badger2040W()
@@ -21,14 +22,8 @@ TIMEZONE = "auto"  # determines time zone from lat/long
 URL = "http://api.open-meteo.com/v1/forecast?latitude=" + str(LAT) + "&longitude=" + str(LNG) + "&current_weather=true&timezone=" + TIMEZONE
 
 i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))  
-wifiIP = badger2040w.network.WLAN(badger2040w.network.STA_IF).ifconfig()[0]
-rtc = machine.RTC()
 
-mqtt_server = 'broker.hivemq.com'
-client_id = 'martrewes'
-topic_pub_extemp = b'martrewes/extemp'
-topic_pub_intemp = b'martrewes/intemp'
-topic_pub_inhum = b'martrewes/inhum'
+rtc = machine.RTC()
 
 temperature = 0
 print(rtc.datetime())
@@ -38,19 +33,9 @@ try:
     badger.connect()
     if badger.isconnected():
         ntptime.settime()
+        wifiIP = badger2040w.network.WLAN(badger2040w.network.STA_IF).ifconfig()[0]
 except (RuntimeError, OSError):
     pass  # no WiFI
-
-def mqtt_connect():
-   client = MQTTClient(client_id, mqtt_server, keepalive=3600)
-   client.connect()
-   print('Connected to %s MQTT Broker'%(mqtt_server))
-   return client
-
-def mqtt_reconnect():
-   print('Failed to connect to the MQTT Broker. Reconnecting...')
-   time.sleep(5)
-   machine.reset()
 
 def clearScreen():
     # Sets the active pen colour to white, fills the screen, then sets it back to black
@@ -77,7 +62,7 @@ def drawRec(startX,startY,xSize,ySize):
     #    D
 
 def getWeather():
-    # Get laterst weather from the internet
+    # Get latest weather from the internet
     global weathercode, temperature, windspeed, winddirection, date, time
     print(f"Requesting URL: {URL}")
     r = urequests.get(URL)
@@ -111,7 +96,7 @@ def getTime():
         
         print("JSON response:\n", response.text)
             
-            # parse JSON
+        # parse JSON
         parsed = response.json()
         datetime_str = str(parsed["datetime"])
         year = int(datetime_str[0:4])
@@ -211,10 +196,13 @@ def noWifi():
     badger.set_font("sans")
 
 def sendData():
-    client.publish(topic_pub_extemp, str(temperature))
-    client.publish(topic_pub_intemp, str(inTemp))
-    client.publish(topic_pub_inhum, str(inHum))
-    print("Data pushed to Node-RED")
+    serverURL = WIFI_CONFIG.serverURL
+    tmpData1 = "api_key=" + WIFI_CONFIG.api_key + "&inTemp=" + str(inTemp) + "&inHum=" + str(inHum) + "&exTemp=" + str(temperature)
+    tempData = ujson.dumps({ "api_key": "testingtestingtesting", "inTemp": 24.75, "inHum": 78.88, "exTemp": 29.4})
+    headers = {'Content-Type': "application/x-www-form-urlencoded"}
+    res = urequests.post(serverURL, data = tmpData1, headers=headers)
+    #res = urequests.post(serverURL + tmpData1)
+    print(res.text)
 
 #scanI2C()
 getTime()
@@ -223,11 +211,7 @@ if badger.isconnected():
     print("WiFi connected, refresh data") 
     getWeather()
     setWeather()
-    try:
-        client = mqtt_connect()
-        sendData() 
-    except OSError as e:
-        reconnect()
+    sendData()
 else:
     badger.rectangle(100, 3, 90, 120)
 
@@ -238,7 +222,6 @@ while True:
     inTemp = ""
     clearScreen()
     updateTime()
-    #client.publish(topic_pub_intemp, str(20.3))
     # If weather data available, show it. If not, wont show error for no variables
     if temperature > 0:
         setWeather()
@@ -259,4 +242,7 @@ while True:
     minutesSince+=1
     print(minutesSince)
     badger.update()
+    #print(WIFI_CONFIG.SSID)
+    #sendData()
     utime.sleep(60)
+    
