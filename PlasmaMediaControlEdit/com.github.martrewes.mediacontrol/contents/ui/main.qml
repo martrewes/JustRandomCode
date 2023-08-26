@@ -57,6 +57,18 @@ Item {
             return xesamAlbum
         }
     }
+
+    property string trackNo: {
+        if (!currentMetadata) {
+            return ""
+        }
+        var xesamTrackNo = currentMetadata["xesam:trackNumber"]
+
+        if (xesamTrackNo) {
+            return xesamTrackNo
+        }
+    }
+
     property string trackLength: {
 
         if (!currentMetadata) {
