@@ -236,7 +236,7 @@ MouseArea {
                     elide: Text.ElideRight
                     horizontalAlignment: grid.flow === GridLayout.TopToBottom ? Text.AlignHCenter : Text.AlignJustify
                     maximumLineCount: 1
-                    text: root.trackNo + ". " + root.track + root.trackLength
+                    text: root.trackNo + root.track + root.trackLength
                     textFormat: Text.PlainText
                     wrapMode: Text.Wrap
                 }

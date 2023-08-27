@@ -54,7 +54,7 @@ Item {
         var xesamAlbum = currentMetadata["xesam:album"]
 
         if (xesamAlbum) {
-            return xesamAlbum
+            return " .:. " + xesamAlbum
         }
     }
 
@@ -65,7 +65,7 @@ Item {
         var xesamTrackNo = currentMetadata["xesam:trackNumber"]
 
         if (xesamTrackNo) {
-            return xesamTrackNo
+            return xesamTrackNo + ". "
         }
     }
 
