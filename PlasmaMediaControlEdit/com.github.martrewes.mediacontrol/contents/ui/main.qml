@@ -76,7 +76,13 @@ Item {
         }
         var xesamLength = currentMetadata["mpris:length"] / 1000000
         var mprisLength = new Date(xesamLength * 1000).toISOString().substring(11, 19)
-        if (xesamLength) {
+
+        console.log(mprisLength.substring(0,2));
+
+        if (mprisLength.substring(0,2) == "00") {
+            return " (" + mprisLength.substring(3,8) + ")"
+        }
+        else {
             return " (" + mprisLength + ")"
         }
     }
