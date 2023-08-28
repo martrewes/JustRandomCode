@@ -254,7 +254,7 @@ MouseArea {
                     horizontalAlignment: songTitle.horizontalAlignment
                     maximumLineCount: 1
                     opacity: 0.6
-                    text: root.artist + " .:. " + root.album + root.trackDate
+                    text: root.artist + root.album + root.trackDate
                     textFormat: Text.PlainText
                     wrapMode: Text.Wrap
                 }
