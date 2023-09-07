@@ -14,7 +14,7 @@ Code snippets or little programs that don't need their own repository.
 [FetchingMySQL](./FetchingMySQL)|Test script to retrieve data from SQL table|
 |[LOpy](./LOpy)|Terminal LightsOut port in Python|
 |[PennyProblemSolver](./PennyProblemSolver)|Can't really remember what it does, think it counts pennies to find a fake or something|
-|[PicoWeather]|Displays Internal/External weather on E-Ink display of [Badger2040w](https://shop.pimoroni.com/products/badger-2040-w?variant=40514062188627)|
+|[PicoWeather](./PicoWeather)|Displays Internal/External weather on E-Ink display of [Badger2040w](https://shop.pimoroni.com/products/badger-2040-w?variant=40514062188627)|
 |[PlasmaMediaControlEdit](./PlasmaMediaControlEdit)|Displays current playing media info on Plasma Panel. Extended from original to show more information|
 |[QuodlibetXFCE_Applet](./QuodlibetXFCE_Applet)| Same as above but for XFCE|
 |[SleepTimer](./SleepTimer)|PyQT5 app to set device to go to sleep after a set period of time. Works on both Linux and Windows. Own repo [here](https://www.github.com/martrewes/SleepTimer)|
