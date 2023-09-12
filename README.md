@@ -20,4 +20,4 @@ Code snippets or little programs that don't need their own repository.
 |[SleepTimer](./SleepTimer)|PyQT5 app to set device to go to sleep after a set period of time. Works on both Linux and Windows. Own repo [here](https://www.github.com/martrewes/SleepTimer)|
 |[xfce-hkmon-fork](./xfce-hkmon-fork)| Fork of original to show bytes instead of bits for network|
 |kruskalCount.py|I think this was for a guess-the-card type thing. Didn't finish it in repo, and lost completed one|
-|yearPay.py|Simple script to calculate yearly pay from hour rate
+|yearPay.py|Simple script to calculate yearly pay from hour rate|
