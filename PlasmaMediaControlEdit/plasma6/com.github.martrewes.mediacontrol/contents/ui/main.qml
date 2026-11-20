@@ -124,7 +124,8 @@ PlasmoidItem {
                     }
 
                     // Length: digits after 'mpris:length':
-                    const lenMatch = stdout.match(/'mpris:length':[^0-9]*(\d+)/);
+                    //const lenMatch = stdout.match(/'mpris:length':[^0-9]*(\d+)/);
+                    const lenMatch = stdout.match(/'mpris:length':[^a-z0-9]*(?:[a-z]+\d*\s+)?(\d+)/);
                     if (lenMatch) {
                         const [, rawLen] = lenMatch;
                         const secs = Math.floor(parseInt(rawLen, 10) / 1000000);
