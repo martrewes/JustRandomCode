@@ -20,7 +20,7 @@ Loader {
     id: compactRepresentation
 
     // Adjust this multiplier (e.g., 16 to 20) to fine-tune the exact max text width
-    readonly property real maxTextWidth: Kirigami.Units.gridUnit * 12
+    readonly property real maxTextWidth: Kirigami.Units.gridUnit * 10
 
     Layout.fillWidth: layoutForm !== CompactRepresentation.LayoutType.HorizontalPanel && layoutForm !== CompactRepresentation.LayoutType.HorizontalDesktop
     Layout.fillHeight: layoutForm !== CompactRepresentation.LayoutType.VerticalPanel && layoutForm !== CompactRepresentation.LayoutType.VerticalDesktop

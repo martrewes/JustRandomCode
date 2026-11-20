@@ -97,26 +97,35 @@ PlasmoidItem {
 
                     // Extract string values after 'key': ... 'value'
                     const getStr = (key) => {
-                        const re = new RegExp("'" + key + "':[^']*'((?:\\\\'|[^'])*)'");
-                        const m = stdout.match(re);
+                        const idx = stdout.indexOf("'" + key + "':");
+                        if (idx === -1) return "";
+                        const rest = stdout.slice(idx + key.length + 3);
+                        const qMatch = rest.match(/^\s*(?:[a-z0-9]+\s+)?(['"])/);
+                        if (!qMatch) return "";
+                        const [, quote] = qMatch;
+                        const valRe = new RegExp("^\\s*(?:[a-z0-9]+\\s+)?" + quote + "((?:\\\\" + quote + "|[^" + quote + "])*)" + quote);
+                        const m = rest.match(valRe);
                         if (!m) return "";
                         const [, val] = m;
-                        return val.replace(/\\'/g, "'");
+                        return val.replace(new RegExp("\\\\" + quote, "g"), quote);
                     };
 
                     root.dbusTrack = getStr("xesam:title");
                     root.dbusAlbum = getStr("xesam:album");
 
                     // Extract artist array between [ and ]
+                    //const artistArrMatch = stdout.match(/'xesam:artist':[^\[]*\[([^\]]*)\]/);
+                    
+                    // Extract artist array between [ and ] (supporting both ' and " items)
                     const artistArrMatch = stdout.match(/'xesam:artist':[^\[]*\[([^\]]*)\]/);
                     if (artistArrMatch) {
                         const [, rawList] = artistArrMatch;
                         const artists = [];
-                        const re = /'((?:\\'|[^'])*)'/g;
+                        const re = /(['"])((?:\\.|(?!\1).)*)\1/g;
                         let item;
                         while ((item = re.exec(rawList)) !== null) {
-                            const [, artistName] = item;
-                            artists.push(artistName.replace(/\\'/g, "'"));
+                            const [, quote, artistName] = item;
+                            artists.push(artistName.replace(new RegExp("\\\\" + quote, "g"), quote));
                         }
                         root.dbusArtist = artists.join(", ");
                     } else {
