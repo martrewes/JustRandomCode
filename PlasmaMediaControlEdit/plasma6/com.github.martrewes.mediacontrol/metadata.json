@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "martrewes"
+            }
+        ],
+        "Category": "Multimedia",
+        "Description": "Media player controls with extended metadata (track number, length, album, year) and synchronized marquee scrolling",
+        "Icon": "applications-multimedia",
+        "Id": "com.github.martrewes.mediacontrol",
+        "License": "GPL-2.0-or-later",
+        "Name": "Media Player (Extended)",
+        "Version": "2.0",
+        "Website": "https://github.com"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "ui/main.qml"
+}
